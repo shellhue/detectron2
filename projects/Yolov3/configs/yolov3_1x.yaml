@@ -1,0 +1,9 @@
+_BASE_: "base_yolov3.yaml"
+MODEL:
+  MASK_ON: False
+  BACKBONE:
+    FREEZE_AT: 0
+  
+SOLVER:
+  STEPS: (300000, 450000)
+  MAX_ITER: 600000

@@ -8,7 +8,6 @@ from detectron2.utils.logger import log_first_n
 
 __all__ = ["DatasetCatalog", "MetadataCatalog"]
 
-
 class DatasetCatalog(object):
     """
     A catalog that stores information about the datasets and how to obtain them.
