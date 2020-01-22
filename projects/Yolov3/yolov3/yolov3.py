@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 from detectron2.structures import Boxes, ImageList, Instances, pairwise_iou
 from detectron2.modeling import META_ARCH_REGISTRY, build_backbone, build_anchor_generator
-from detectron2.modeling import build_grid_generator, build_stride_generator
+# from detectron2.modeling import build_grid_generator, build_stride_generator
 from detectron2.modeling.box_regression import Box2BoxTransform
 from detectron2.modeling.matcher import Matcher
 
@@ -15,6 +15,8 @@ from detectron2.layers import batched_nms
 
 
 from .yolov3_box_predictor import Yolov3Head
+from .grid_generator import build_grid_generator
+from .stride_generator import build_stride_generator
 
 @META_ARCH_REGISTRY.register()
 class Yolov3(nn.Module):

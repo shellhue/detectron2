@@ -1,3 +1,4 @@
+export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # retinanet_R_50_FPN_3x input imgs dir
 # ===================================

@@ -254,6 +254,13 @@ class Boxes:
         """
         self.tensor[:, 0::2] *= scale_x
         self.tensor[:, 1::2] *= scale_y
+    
+    def translate(self, dx: float, dy: float) -> None:
+        """
+        Translate the box with horizontal and vertical translating factors
+        """
+        self.tensor[:, 0::2] += dx
+        self.tensor[:, 1::2] += dy
 
     @staticmethod
     def cat(boxes_list: List["Boxes"]) -> "Boxes":
