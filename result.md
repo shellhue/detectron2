@@ -210,6 +210,24 @@ final_loss: 0.814
 top1: 0.7712
 top5: 0.9337
 ```
+### setting 11
+setting
+```
+image_process: no resnet normalize
+batch: 256
+gpu: 8
+lr: 0.1
+steps: (150000, 300000, 450000)
+total_steps: 600000
+weight_decay: 0.0005
+eta: 1 day, 13:19:15
+```
+result
+```
+final_loss: 1.058
+top1: 0.7566
+top5: 0.9293
+```
 
 # resnet #
 ### setting 1
