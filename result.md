@@ -228,6 +228,24 @@ final_loss: 1.058
 top1: 0.7566
 top5: 0.9293
 ```
+### setting 12
+setting
+```
+image_process: no resnet normalize
+batch: 256
+gpu: 8
+lr: 0.1
+steps: (150000, 300000, 450000)
+total_steps: 600000
+weight_decay: 0.00005
+eta: 1 day, 12:14:33
+```
+result
+```
+final_loss: 0.731
+top1: 0.7637
+top5: 0.9297
+```
 
 # resnet #
 ### setting 1
@@ -236,7 +254,7 @@ setting
 model: resnet50 
 batch: 256
 gpu: 8
-lr: 0.2
+lr: 0.1
 steps: (150000, 300000, 450000)
 total_steps: 600000
 weight_decay: 0.0001
@@ -247,4 +265,23 @@ result
 final_loss: 0.933
 top1: 0.7675
 top5: 0.9322
+```
+# mobilenetv1 #
+### setting 1
+setting
+```
+model: mobilenetv1 
+batch: 256
+gpu: 8
+lr: 0.1
+steps: (150000, 300000, 450000)
+total_steps: 600000
+weight_decay: 0.0001
+eta: 
+```
+result
+```
+final_loss: 
+top1: 
+top5: 
 ```
