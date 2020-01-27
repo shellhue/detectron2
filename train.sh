@@ -59,7 +59,23 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # darknet train
 # ===================================
+# python projects/Backbone/train_net.py \
+#     --num-gpus 8 \
+#     --resume \
+#     --config-file projects/Backbone/configs/darknet_4x.yaml
+
+# ===================================
+# mobilenetv1 train
+# ===================================
+# python projects/Backbone/train_net.py \
+#     --num-gpus 8 \
+#     --resume \
+#     --config-file projects/Backbone/configs/mobilenetv1_4x.yaml
+
+# ===================================
+# mobilenetv2 train
+# ===================================
 python projects/Backbone/train_net.py \
     --num-gpus 8 \
     --resume \
-    --config-file projects/Backbone/configs/darknet_4x.yaml
+    --config-file projects/Backbone/configs/mobilenetv2_4x.yaml

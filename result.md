@@ -277,11 +277,11 @@ lr: 0.1
 steps: (150000, 300000, 450000)
 total_steps: 600000
 weight_decay: 0.0001
-eta: 
+eta: 17:41:47
 ```
 result
 ```
-final_loss: 
-top1: 
-top5: 
+final_loss: 1.219
+top1: 0.7204
+top5: 0.9053
 ```
