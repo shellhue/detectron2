@@ -285,3 +285,97 @@ final_loss: 1.219
 top1: 0.7204
 top5: 0.9053
 ```
+# mobilenetv2 #
+### setting 1
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.1
+steps: (150000, 300000, 450000)
+total_steps: 600000
+weight_decay: 0.0001
+eta: 18:12:21
+```
+result
+```
+final_loss: 1.219
+top1: 0.7062
+top5: 0.8968
+```
+### setting 2
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.045
+steps: (150000, 300000, 450000)
+total_steps: 600000
+weight_decay: 0.00004
+eta: 18:13:22
+```
+result
+```
+final_loss: 1.380
+top1: 0.6960
+top5: 0.8879
+```
+### setting 3
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.1
+steps: (150000, 300000, 450000)
+total_steps: 600000
+weight_decay: 0.0001
+lr_scheduler: cos
+eta: 18:19:52
+```
+result
+```
+final_loss: 1.199
+top1: 0.7180
+top5: 0.9034
+```
+### setting 4
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.1
+steps: (150000, 300000, 450000)
+total_steps: 600000
+weight_decay: 0.0001
+lr_scheduler: multistep
+eta: 18:19:52
+```
+result
+```
+final_loss: 1.418
+top1: 0.7058
+top5: 0.8957
+```
+### setting 5
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.045
+steps: (150000, 300000, 450000)
+total_steps: 600000
+weight_decay: 0.0001
+lr_scheduler: cos
+eta: 18:19:52
+```
+result
+```
+final_loss: 
+top1: 
+top5: 
+```

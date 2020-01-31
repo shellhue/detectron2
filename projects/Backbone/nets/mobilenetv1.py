@@ -5,13 +5,9 @@ import torch.nn.functional as F
 import fvcore.nn.weight_init as weight_init
 from detectron2.modeling.backbone.backbone import Backbone
 from detectron2.modeling.backbone.build import BACKBONE_REGISTRY
-from detectron2.modeling.backbone.resnet import BottleneckBlock
 
 from detectron2.layers import (
     Conv2d,
-    DeformConv,
-    FrozenBatchNorm2d,
-    ModulatedDeformConv,
     ShapeSpec,
     get_norm,
 )

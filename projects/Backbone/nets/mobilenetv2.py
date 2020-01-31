@@ -5,13 +5,9 @@ import numpy as np
 import fvcore.nn.weight_init as weight_init
 from detectron2.modeling.backbone.backbone import Backbone
 from detectron2.modeling.backbone.build import BACKBONE_REGISTRY
-from detectron2.modeling.backbone.resnet import BottleneckBlock
 
 from detectron2.layers import (
     Conv2d,
-    DeformConv,
-    FrozenBatchNorm2d,
-    ModulatedDeformConv,
     ShapeSpec,
     get_norm,
 )
@@ -183,19 +179,25 @@ class MobileNetV2(Backbone):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 weight_init.c2_msra_fill(m)
-            elif isinstance(m, nn.BatchNorm2d):
-                m.weight.data.fill_(1)
-                m.bias.data.zero_()
             elif isinstance(m, nn.Linear):
-                m.weight.data.normal_(0, 0.01)
-                m.bias.data.zero_()
+                nn.init.normal_(m.weight, std=0.01)
 
 
 def mobilenet_v2(pretrained=True):
     model = MobileNetV2(width_mult=1)
-
     return model
+
 
 @BACKBONE_REGISTRY.register()
 def build_mobilenetv2_backbone(cfg, input_shape):
-    return MobileNetV2(width_mult=1)
+    model = MobileNetV2(width_mult=1)
+    # print("==========================")
+    # # print(list(m.modules()))
+    # c = 0
+    # for m in model.modules():
+    #     if isinstance(m, nn.Conv2d):
+    #         print(m)
+    #         c += 1
+    # print(c)
+    # assert False
+    return model
