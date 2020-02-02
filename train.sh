@@ -74,7 +74,7 @@ export PYTHONPATH=".:${PYTHONPATH}"
 
 # ===================================
 # mobilenetv2 train
-# ===================================
+# ===================================  v     
 python projects/Backbone/train_net.py \
     --num-gpus 8 \
     --resume \

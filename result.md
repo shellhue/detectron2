@@ -375,7 +375,26 @@ eta: 18:19:52
 ```
 result
 ```
-final_loss: 
-top1: 
-top5: 
+final_loss: 1.307
+top1: 0.7141
+top5: 0.9008
+```
+### setting 6
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.1
+steps: (150000, 300000, 450000)
+total_steps: 600000
+weight_decay: 0.00004
+lr_scheduler: cos
+eta: 18:02:17
+```
+result
+```
+final_loss: 1.213
+top1: 0.7214
+top5: 0.9050
 ```
