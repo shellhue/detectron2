@@ -75,7 +75,15 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # mobilenetv2 train
 # ===================================  v     
+# python projects/Backbone/train_net.py \
+#     --num-gpus 8 \
+#     --resume \
+#     --config-file projects/Backbone/configs/mobilenetv2_4x.yaml
+
+# ===================================
+# shufflenetv1 train
+# ===================================  
 python projects/Backbone/train_net.py \
     --num-gpus 8 \
     --resume \
-    --config-file projects/Backbone/configs/mobilenetv2_4x.yaml
+    --config-file projects/Backbone/configs/shufflenetv1_4x.yaml

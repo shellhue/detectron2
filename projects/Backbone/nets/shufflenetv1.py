@@ -171,7 +171,7 @@ class ShuffleUnit(nn.Module):
         return F.relu(out)
 
 
-class ShuffleNet(nn.Module):
+class ShuffleNet(Backbone):
     """ShuffleNet implementation.
     """
 

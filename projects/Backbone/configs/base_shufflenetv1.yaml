@@ -1,0 +1,6 @@
+_BASE_: "base_backbone.yaml"
+
+MODEL:
+  BACKBONE:
+    NAME: "build_shufflenetv1_backbone"
+
