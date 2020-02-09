@@ -398,3 +398,80 @@ final_loss: 1.213
 top1: 0.7214
 top5: 0.9050
 ```
+# shullenetv1 #
+### setting 1
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.1
+total_steps: 600000
+weight_decay: 0.0001
+lr_scheduler: cos
+normalize: no
+eta: 18:17:42
+```
+result
+```
+final_loss: 1.515
+top1: 0.6706
+top5: 0.8717
+```
+### setting 2
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.1
+total_steps: 600000
+weight_decay: 0.0001
+lr_scheduler: cos
+normalize: yes
+eta: 19:01:45
+```
+result
+```
+final_loss: 1.558
+top1: 0.6660
+top5: 0.8709
+```
+### setting 3
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.1
+total_steps: 600000
+weight_decay: 0.00004
+lr_scheduler: cos
+normalize: no
+eta: 18:21:56
+```
+result
+```
+final_loss: 1.489
+top1: 0.6655
+top5: 0.8685
+```
+### setting 4
+setting
+```
+model: mobilenetv2
+batch: 256
+gpu: 8
+lr: 0.1
+total_steps: 600000
+weight_decay: 0.0002
+lr_scheduler: cos
+normalize: no
+eta: 
+```
+result
+```
+final_loss: 
+top1: 
+top5: 
+```
