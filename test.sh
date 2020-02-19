@@ -28,7 +28,6 @@ python projects/Yolov3/train_net.py \
     --num-gpus 2 \
     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
     --eval-only \
-    --resume \
     MODEL.WEIGHTS weights/yolov3.pth
 
 
@@ -66,12 +65,12 @@ python projects/Yolov3/train_net.py \
 # ===================================
 # darknet53 test
 # ===================================
-# python projects/Darknet/train_net.py \
-#     --num-gpus 1 \
-#     --config-file projects/Darknet/configs/darknet_4x_256.yaml \
+# python projects/Backbone/train_net.py \
+#     --num-gpus 8 \
 #     --eval-only \
 #     --resume \
-#     MODEL.WEIGHTS output/model_0499999.pth
+#     --config-file projects/Backbone/configs/darknet_4x.yaml \
+#     MODEL.WEIGHTS weights/darknet53.pth
 
 
 # ===================================

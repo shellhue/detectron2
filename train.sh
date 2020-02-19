@@ -21,11 +21,12 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # yolov3 train
 # ===================================
-# python projects/Yolov3/train_net.py \
-#     --num-gpus 1 \
-#     --resume \
-#     --config-file projects/Yolov3/configs/yolov3_darknet53_1x.yaml \
-#     SOLVER.IMS_PER_BATCH 4 SOLVER.BASE_LR 0.001
+python projects/Yolov3/train_net.py \
+    --num-gpus 8 \
+    --resume \
+    --config-file projects/Yolov3/configs/yolov3_1x.yaml
+    #  \
+    # MODEL.WEIGHTS weights/yolov3.pth
 
 
 # ===================================
@@ -83,7 +84,7 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # shufflenetv1 train
 # ===================================  
-python projects/Backbone/train_net.py \
-    --num-gpus 8 \
-    --resume \
-    --config-file projects/Backbone/configs/shufflenetv1_4x.yaml
+# python projects/Backbone/train_net.py \
+#     --num-gpus 8 \
+#     --resume \
+#     --config-file projects/Backbone/configs/shufflenetv1_4x.yaml

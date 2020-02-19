@@ -467,11 +467,11 @@ total_steps: 600000
 weight_decay: 0.0002
 lr_scheduler: cos
 normalize: no
-eta: 
+eta: 18:29:28
 ```
 result
 ```
-final_loss: 
-top1: 
-top5: 
+final_loss: 1.569
+top1: 0.6626
+top5: 0.8700
 ```

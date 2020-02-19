@@ -13,9 +13,18 @@ from detectron2.config import get_cfg
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, launch
 from detectron2.evaluation import COCOEvaluator, verify_results
 
-from yolov3 import add_yolov3_config
+from yolov3 import add_yolov3_config, CustomDetectionCheckpointer
 
 class Trainer(DefaultTrainer):
+    def build_dectetion_checkpoint(self, model, output_dir, optimizer, scheduler):
+        return CustomDetectionCheckpointer(
+            # Assume you want to save checkpoints together with logs/statistics
+            model,
+            output_dir,
+            optimizer=optimizer,
+            scheduler=scheduler
+        )
+    
     @classmethod
     def build_evaluator(cls, cfg, dataset_name, output_folder=None):
         if output_folder is None:

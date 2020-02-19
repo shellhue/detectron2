@@ -258,7 +258,7 @@ class DefaultTrainer(SimpleTrainer):
         self.scheduler = self.build_lr_scheduler(cfg, optimizer)
         # Assume no other objects need to be checkpointed.
         # We can later make it checkpoint the stateful hooks
-        self.checkpointer = DetectionCheckpointer(
+        self.checkpointer = self.build_dectetion_checkpoint(
             # Assume you want to save checkpoints together with logs/statistics
             model,
             cfg.OUTPUT_DIR,
@@ -377,6 +377,15 @@ class DefaultTrainer(SimpleTrainer):
         if hasattr(self, "_last_eval_results") and comm.is_main_process():
             verify_results(self.cfg, self._last_eval_results)
             return self._last_eval_results
+    
+    def build_dectetion_checkpoint(self, model, output_dir, optimizer, scheduler):
+        return DetectionCheckpointer(
+            # Assume you want to save checkpoints together with logs/statistics
+            model,
+            output_dir,
+            optimizer=optimizer,
+            scheduler=scheduler
+        )
 
     @classmethod
     def build_model(cls, cfg):
