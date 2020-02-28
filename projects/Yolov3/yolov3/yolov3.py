@@ -83,6 +83,7 @@ class Yolov3(nn.Module):
             gt_instances = [x["instances"].to(self.device) for x in batched_inputs]
         else:
             gt_instances = None
+        
         fpn_features_dict = self.backbone(images.tensor)
         
         features = [fpn_features_dict[f] for f in self.in_features]
@@ -100,13 +101,26 @@ class Yolov3(nn.Module):
         predicts_confidence_logits = [p[..., 4] for p in predicts_permuted]
         predicts_classes_logits = [p[..., 5:] for p in predicts_permuted]
         predicts_anchor_deltas = [p[..., :4] for p in predicts_permuted]
-
+        
         if self.training:
             predict_sizes = [i.size()[-2:] for i in predicts]
+            # print("input image size:", images.tensor.size())
+            # print("instances:", gt_instances)
+            # print("batched_inputs:", batched_inputs)
+            # print("predict_sizes: ", predict_sizes)
+            # print("predicts_confidence_logits: ", [i.size() for i in predicts_confidence_logits])
+            # print("predicts_classes_logits: ", [i.size() for i in predicts_classes_logits])
+            # print("predicts_anchor_deltas: ", [i.size() for i in predicts_anchor_deltas])
+            # print(self.anchors)
+            # print(self.feature_strides)
+            # assert False
 
             gt_classes, gt_anchor_deltas = self.get_ground_truth(predict_sizes, self.anchors, self.feature_strides, gt_instances, device)
+            # print(gt_classes.size(), gt_anchor_deltas.size())
+            # assert False
 
             losses = self.losses(gt_classes, gt_anchor_deltas, predicts_confidence_logits, predicts_classes_logits, predicts_anchor_deltas)
+            
 
             return losses
         else:
@@ -164,7 +178,7 @@ class Yolov3(nn.Module):
         # reshape to NR
         predicts_confidence_logits = [p.reshape(-1) for p in predicts_confidence_logits]
         predicts_confidence_logits = torch.cat(predicts_confidence_logits, dim=0)
-
+        
         # reshape to NRxK
         predicts_classes_logits = [p.reshape(-1, self.num_classes) for p in predicts_classes_logits]
         predicts_classes_logits = torch.cat(predicts_classes_logits, dim=0)
@@ -181,11 +195,13 @@ class Yolov3(nn.Module):
         gt_anchor_deltas = [g.reshape(-1, 4) for g in gt_anchor_deltas]
         gt_anchor_deltas = torch.cat(gt_anchor_deltas, dim=0)
 
-        # truth mask NxR
+        # truth mask NR
         truth_mask = (gt_classes >= 0) & (gt_classes != self.num_classes)
+        
+        
         negative_mask = gt_classes == self.num_classes
         num_foreground = truth_mask.sum()
-
+        
         # loss xy
         # print(num_foreground)
         # print(negative_mask.sum())
@@ -200,11 +216,17 @@ class Yolov3(nn.Module):
 
         # loss confidence
         loss_conf = F.binary_cross_entropy_with_logits(predicts_confidence_logits[truth_mask], truth_mask[truth_mask].float()) + F.binary_cross_entropy_with_logits(predicts_confidence_logits[negative_mask], truth_mask[negative_mask].float())
-        loss_conf /= max(1, num_foreground)
+        # loss_conf /= max(1, num_foreground)
+
+        # print(predicts_confidence_logits[negative_mask].size(), truth_mask[negative_mask].size())
+        # print("truth_mask num:", truth_mask.sum())
+        # print("negative_mask:", negative_mask.sum())
+        # print(truth_mask[negative_mask].float())
+        # assert False
 
         # loss class
         loss_classes = F.cross_entropy(predicts_classes_logits[truth_mask], gt_classes[truth_mask].long())
-        loss_classes /= max(1, num_foreground)
+        # loss_classes /= max(1, num_foreground)
 
         return {
             "loss_xy": loss_xy,
@@ -449,7 +471,7 @@ class Yolov3(nn.Module):
         """
         images = [x["image"].float().to(self.device) for x in batched_inputs]
         images = [self.normalizer(x) for x in images]
-
+        
         images = ImageList.from_tensors(images, self.backbone.size_divisibility)
         return images
 
