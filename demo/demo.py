@@ -7,10 +7,12 @@ import time
 import cv2
 import tqdm
 
+from fetcher import get_all_imgs_in_dir
+
 from detectron2.config import get_cfg
 from detectron2.data.detection_utils import read_image
 from detectron2.utils.logger import setup_logger
-
+from projects.Yolov3.yolov3 import add_yolov3_config
 from predictor import VisualizationDemo
 
 # constants
@@ -20,6 +22,7 @@ WINDOW_NAME = "COCO detections"
 def setup_cfg(args):
     # load config from file and command-line arguments
     cfg = get_cfg()
+    add_yolov3_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
     # Set score_threshold for builtin models
@@ -41,6 +44,7 @@ def get_parser():
     parser.add_argument("--webcam", action="store_true", help="Take inputs from webcam.")
     parser.add_argument("--video-input", help="Path to video file.")
     parser.add_argument("--input", nargs="+", help="A list of space separated input images")
+    parser.add_argument("--input_dir", help="A input images directory")
     parser.add_argument(
         "--output",
         help="A file or directory to save output visualizations. "
@@ -72,10 +76,12 @@ if __name__ == "__main__":
 
     demo = VisualizationDemo(cfg)
 
-    if args.input:
-        if len(args.input) == 1:
+    if args.input or args.input_dir:
+        if args.input and len(args.input) == 1:
             args.input = glob.glob(os.path.expanduser(args.input[0]))
             assert args.input, "The input path(s) was not found"
+        if args.input_dir:
+            args.input = get_all_imgs_in_dir(args.input_dir)
         for path in tqdm.tqdm(args.input, disable=not args.output):
             # use PIL, to be consistent with evaluation
             img = read_image(path, format="BGR")

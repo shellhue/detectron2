@@ -25,7 +25,7 @@ python projects/Yolov3/train_net.py \
     --num-gpus 8 \
     --resume \
     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
-    # SOLVER.IMS_PER_BATCH 2 SOLVER.BASE_LR 0.003
+    SOLVER.IMS_PER_BATCH 16 SOLVER.BASE_LR 0.001
     #  \
     # MODEL.WEIGHTS weights/yolov3.pth
 

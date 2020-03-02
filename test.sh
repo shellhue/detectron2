@@ -27,8 +27,10 @@ export PYTHONPATH=".:${PYTHONPATH}"
 python projects/Yolov3/train_net.py \
     --num-gpus 2 \
     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
-    --eval-only \
-    MODEL.WEIGHTS weights/yolov3.pth
+    --resume \
+    --eval-only
+    #  \
+    # MODEL.WEIGHTS weights/yolov3.pth
 
 
 # ===================================

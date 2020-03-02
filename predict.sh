@@ -43,11 +43,11 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # yolov3 input img
 # ===================================
 python demo/demo.py \
-	--config-file projects/Yolov3/configs/yolov3_darknet53_1x.yaml \
+	--config-file projects/Yolov3/configs/yolov3_1x.yaml \
 	--input_dir /home/huangzeyu/tmp/goggles/datasets/train \
-	--output /home/huangzeyu/tmp/goggles/output/train/detected_persons \
-	--crop_output /home/huangzeyu/tmp/goggles/output/train/detected_persons \
-	--opts MODEL.WEIGHTS weights/yolov3.pth
+	--output /home/huangzeyu/tmp/goggles/output_t \
+	--opts MODEL.WEIGHTS output/model_0249999.pth
+
 # python demo/demo.py \
 # 	--config-file projects/Yolov3/configs/yolov3_darknet53_1x.yaml \
 # 	--input datasets/coco/val2017/000000289594.jpg \

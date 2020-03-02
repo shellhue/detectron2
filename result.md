@@ -475,3 +475,20 @@ final_loss: 1.569
 top1: 0.6626
 top5: 0.8700
 ```
+## yolov3 ##
+setting
+```
+batch: 16
+gpu: 8
+lr: 0.004
+total_steps: 600000
+weight_decay: 0.0005
+lr_scheduler: cos
+eta: 20:28:48
+```
+result
+```
+final_loss: 1.569
+mAP: 5.655
+mAP50: 16.247
+```

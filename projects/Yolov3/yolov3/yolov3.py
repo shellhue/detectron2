@@ -60,6 +60,10 @@ class Yolov3(nn.Module):
         self.normalizer = lambda x: x / 255.0
         self.to(self.device)
         self.get_conv_bn_modules()
+
+        self.bce_loss = nn.BCELoss()
+        self.sigmoid = nn.Sigmoid()
+
     def forward(self, batched_inputs):
         """
         Args:
@@ -178,7 +182,8 @@ class Yolov3(nn.Module):
         # reshape to NR
         predicts_confidence_logits = [p.reshape(-1) for p in predicts_confidence_logits]
         predicts_confidence_logits = torch.cat(predicts_confidence_logits, dim=0)
-        
+        predicts_confidence_logits = self.sigmoid(predicts_confidence_logits)
+
         # reshape to NRxK
         predicts_classes_logits = [p.reshape(-1, self.num_classes) for p in predicts_classes_logits]
         predicts_classes_logits = torch.cat(predicts_classes_logits, dim=0)
@@ -186,7 +191,8 @@ class Yolov3(nn.Module):
         # reshape to NRx4
         predicts_anchor_deltas = [p.reshape(-1, 4) for p in predicts_anchor_deltas]
         predicts_anchor_deltas = torch.cat(predicts_anchor_deltas, dim=0)
-
+        predicts_anchor_deltas[...,:2] = self.sigmoid(predicts_anchor_deltas[...,:2])
+        
         # reshape to NR
         gt_classes = [g.reshape(-1, ) for g in gt_classes]
         gt_classes = torch.cat(gt_classes, dim=0)
@@ -198,36 +204,25 @@ class Yolov3(nn.Module):
         # truth mask NR
         truth_mask = (gt_classes >= 0) & (gt_classes != self.num_classes)
         
-        
         negative_mask = gt_classes == self.num_classes
         num_foreground = truth_mask.sum()
         
         # loss xy
-        # print(num_foreground)
-        # print(negative_mask.sum())
-        # print(gt_classes[truth_mask])
-        # print(gt_anchor_deltas[truth_mask])
         loss_xy = torch.pow(predicts_anchor_deltas[truth_mask][..., :2] - gt_anchor_deltas[truth_mask][..., :2], 2)
         loss_xy = loss_xy.sum() / max(1, num_foreground)
+        loss_xy *= 10
 
         # loss wh
         loss_wh = torch.pow(predicts_anchor_deltas[truth_mask][..., 2:] - gt_anchor_deltas[truth_mask][..., 2:], 2)
         loss_wh = loss_wh.sum() / max(1, num_foreground)
+        loss_wh *= 10
 
         # loss confidence
-        loss_conf = F.binary_cross_entropy_with_logits(predicts_confidence_logits[truth_mask], truth_mask[truth_mask].float()) + F.binary_cross_entropy_with_logits(predicts_confidence_logits[negative_mask], truth_mask[negative_mask].float())
-        # loss_conf /= max(1, num_foreground)
-
-        # print(predicts_confidence_logits[negative_mask].size(), truth_mask[negative_mask].size())
-        # print("truth_mask num:", truth_mask.sum())
-        # print("negative_mask:", negative_mask.sum())
-        # print(truth_mask[negative_mask].float())
-        # assert False
+        loss_conf = self.bce_loss(predicts_confidence_logits[truth_mask], truth_mask[truth_mask].float()) + self.bce_loss(predicts_confidence_logits[negative_mask], truth_mask[negative_mask].float())
+        loss_conf *= 100
 
         # loss class
         loss_classes = F.cross_entropy(predicts_classes_logits[truth_mask], gt_classes[truth_mask].long())
-        # loss_classes /= max(1, num_foreground)
-
         return {
             "loss_xy": loss_xy,
             "loss_wh": loss_wh,
@@ -263,6 +258,9 @@ class Yolov3(nn.Module):
                 The values in the tensor are meaningful only when the corresponding
                 anchor is labeled as foreground.
         """
+        # print(predict_sizes, anchors, feature_strides, targets, device)
+
+        # assert False
         anchor_masks = []
         anchor_sizes = []
         strides = []
@@ -347,6 +345,8 @@ class Yolov3(nn.Module):
             gt_deltas_wh = gt_boxes[..., 2:] - gt_boxes[...,:2]
             gt_deltas_wh /= matched_anchors_wh
             gt_deltas_wh = torch.log(gt_deltas_wh)
+            # print(gt_boxes_center, matched_strides.unsqueeze(-1))
+            # assert False
                 
             grid_index = grid_index.int()
             grid_index_x = grid_index.int()[..., 0]
@@ -470,6 +470,8 @@ class Yolov3(nn.Module):
         Normalize, pad and batch the input images.
         """
         images = [x["image"].float().to(self.device) for x in batched_inputs]
+        # print(images)
+        # assert False
         images = [self.normalizer(x) for x in images]
         
         images = ImageList.from_tensors(images, self.backbone.size_divisibility)
