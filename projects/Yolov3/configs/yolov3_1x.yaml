@@ -3,7 +3,7 @@ MODEL:
   WEIGHTS: "weights/darknet53.pth"
   MASK_ON: False
   BACKBONE:
-    FREEZE_AT: 4
+    FREEZE_AT: 0
   
 SOLVER:
   MAX_ITER: 300000
