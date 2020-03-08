@@ -210,24 +210,24 @@ class Yolov3(nn.Module):
         # loss xy
         loss_xy = torch.pow(predicts_anchor_deltas[truth_mask][..., :2] - gt_anchor_deltas[truth_mask][..., :2], 2)
         loss_xy = loss_xy.sum() / max(1, num_foreground)
-        loss_xy *= 10
 
         # loss wh
         loss_wh = torch.pow(predicts_anchor_deltas[truth_mask][..., 2:] - gt_anchor_deltas[truth_mask][..., 2:], 2)
         loss_wh = loss_wh.sum() / max(1, num_foreground)
-        loss_wh *= 10
+        loss_wh = torch.clamp(loss_wh, 0, 5)
 
         # loss confidence
-        loss_conf = self.bce_loss(predicts_confidence_logits[truth_mask], truth_mask[truth_mask].float()) + self.bce_loss(predicts_confidence_logits[negative_mask], truth_mask[negative_mask].float())
-        loss_conf *= 100
+        loss_conf = self.bce_loss(predicts_confidence_logits[truth_mask], truth_mask[truth_mask].float()) * 0.05 + self.bce_loss(predicts_confidence_logits[negative_mask], truth_mask[negative_mask].float()) * 0.95
 
         # loss class
         loss_classes = F.cross_entropy(predicts_classes_logits[truth_mask], gt_classes[truth_mask].long())
+
+        zoom = 1000
         return {
-            "loss_xy": loss_xy,
-            "loss_wh": loss_wh,
-            "loss_conf": loss_conf,
-            "loss_classes": loss_classes
+            "loss_xy": loss_xy * 0.02 * zoom,
+            "loss_wh": loss_wh * 0.02 * zoom,
+            "loss_conf": loss_conf * 0.94 * zoom,
+            "loss_classes": loss_classes * 0.02 * zoom
         }
 
     @torch.no_grad()
@@ -327,8 +327,9 @@ class Yolov3(nn.Module):
             interset_area = interset_wh[..., 0] * interset_wh[..., 1]
             
             iou = interset_area / (gt_boxes_area + anchors_area - interset_area)
-            matched_idx = torch.argmax(iou, 1)
             
+            matched_idx = torch.argmax(iou, 1)
+
             # stage 2: match gt to stage and anchor
             matched_anchors_wh = anchor_sizes[matched_idx]
             gt_boxes = instance.gt_boxes.tensor
@@ -337,24 +338,24 @@ class Yolov3(nn.Module):
             matched_stage = (matched_idx == anchor_masks.unsqueeze(0)).int()
             stage_anchor_idx = matched_stage.nonzero()[...,1:]
             matched_stage_idx = stage_anchor_idx[..., 0]
-            
+            matched_stage_anchor_idx = stage_anchor_idx[..., 1]
             # stage 3: assign class and delta
             grid_index = gt_boxes_center // matched_strides.unsqueeze(-1)
             gt_deltas_xy = gt_boxes_center % matched_strides.unsqueeze(-1).float()
             gt_deltas_xy /= matched_strides.unsqueeze(-1)
             gt_deltas_wh = gt_boxes[..., 2:] - gt_boxes[...,:2]
             gt_deltas_wh /= matched_anchors_wh
-            gt_deltas_wh = torch.log(gt_deltas_wh)
+            gt_deltas_wh = torch.log(gt_deltas_wh+1e-8)
             # print(gt_boxes_center, matched_strides.unsqueeze(-1))
             # assert False
                 
             grid_index = grid_index.int()
-            grid_index_x = grid_index.int()[..., 0]
-            grid_index_y = grid_index.int()[..., 1]
+            grid_index_x = grid_index[..., 0]
+            grid_index_y = grid_index[..., 1]
             matched_final_idx = scale_offset[matched_stage_idx] + \
                 predict_widths[matched_stage_idx] * grid_index_y * \
                 predict_anchors[matched_stage_idx] + grid_index_x * \
-                predict_anchors[matched_stage_idx] + stage_anchor_idx[..., 1]
+                predict_anchors[matched_stage_idx] + matched_stage_anchor_idx
             gt_classes[idx][matched_final_idx] = instance.gt_classes.float()
             gt_deltas[idx][matched_final_idx] = torch.cat([gt_deltas_xy, gt_deltas_wh], dim=1)
         

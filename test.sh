@@ -28,9 +28,8 @@ python projects/Yolov3/train_net.py \
     --num-gpus 2 \
     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
     --resume \
-    --eval-only
-    #  \
-    # MODEL.WEIGHTS weights/yolov3.pth
+    --eval-only \
+    MODEL.WEIGHTS weights/yolov3.pth
 
 
 # ===================================

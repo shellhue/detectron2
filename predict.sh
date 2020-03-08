@@ -46,7 +46,7 @@ python demo/demo.py \
 	--config-file projects/Yolov3/configs/yolov3_1x.yaml \
 	--input_dir /home/huangzeyu/tmp/goggles/datasets/train \
 	--output /home/huangzeyu/tmp/goggles/output_t \
-	--opts MODEL.WEIGHTS output/model_0249999.pth
+	--opts MODEL.WEIGHTS output/model_final.pth
 
 # python demo/demo.py \
 # 	--config-file projects/Yolov3/configs/yolov3_darknet53_1x.yaml \
