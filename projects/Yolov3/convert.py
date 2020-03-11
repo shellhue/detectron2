@@ -90,7 +90,6 @@ def main(args):
     modules = model.get_conv_bn_modules()
     for m in modules:
         print(m.weight.size())
-    assert False, "debug"
     load_darknet_weights(args.initial_weights, modules)
     save_path = os.path.join(args.output_dir, "yolov3.pth")
     torch.save(model.state_dict(), save_path)

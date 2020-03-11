@@ -108,24 +108,8 @@ class Yolov3(nn.Module):
         
         if self.training:
             predict_sizes = [i.size()[-2:] for i in predicts]
-            # print("input image size:", images.tensor.size())
-            # print("instances:", gt_instances)
-            # print("batched_inputs:", batched_inputs)
-            # print("predict_sizes: ", predict_sizes)
-            # print("predicts_confidence_logits: ", [i.size() for i in predicts_confidence_logits])
-            # print("predicts_classes_logits: ", [i.size() for i in predicts_classes_logits])
-            # print("predicts_anchor_deltas: ", [i.size() for i in predicts_anchor_deltas])
-            # print(self.anchors)
-            # print(self.feature_strides)
-            # assert False
-
             gt_classes, gt_anchor_deltas = self.get_ground_truth(predict_sizes, self.anchors, self.feature_strides, gt_instances, device)
-            # print(gt_classes.size(), gt_anchor_deltas.size())
-            # assert False
-
             losses = self.losses(gt_classes, gt_anchor_deltas, predicts_confidence_logits, predicts_classes_logits, predicts_anchor_deltas)
-            
-
             return losses
         else:
             strides = self.stride_generator(predicts)
@@ -217,17 +201,17 @@ class Yolov3(nn.Module):
         loss_wh = torch.clamp(loss_wh, 0, 5)
 
         # loss confidence
-        loss_conf = self.bce_loss(predicts_confidence_logits[truth_mask], truth_mask[truth_mask].float()) * 0.05 + self.bce_loss(predicts_confidence_logits[negative_mask], truth_mask[negative_mask].float()) * 0.95
+        loss_conf = self.bce_loss(predicts_confidence_logits[truth_mask], truth_mask[truth_mask].float()) * 0.005 + self.bce_loss(predicts_confidence_logits[negative_mask], truth_mask[negative_mask].float()) * 0.995
 
         # loss class
         loss_classes = F.cross_entropy(predicts_classes_logits[truth_mask], gt_classes[truth_mask].long())
 
         zoom = 1000
         return {
-            "loss_xy": loss_xy * 0.02 * zoom,
-            "loss_wh": loss_wh * 0.02 * zoom,
-            "loss_conf": loss_conf * 0.94 * zoom,
-            "loss_classes": loss_classes * 0.02 * zoom
+            "loss_xy": loss_xy * 0.001 * zoom,
+            "loss_wh": loss_wh * 0.001 * zoom,
+            "loss_conf": loss_conf * 0.997 * zoom,
+            "loss_classes": loss_classes * 0.001 * zoom
         }
 
     @torch.no_grad()
@@ -339,6 +323,7 @@ class Yolov3(nn.Module):
             stage_anchor_idx = matched_stage.nonzero()[...,1:]
             matched_stage_idx = stage_anchor_idx[..., 0]
             matched_stage_anchor_idx = stage_anchor_idx[..., 1]
+
             # stage 3: assign class and delta
             grid_index = gt_boxes_center // matched_strides.unsqueeze(-1)
             gt_deltas_xy = gt_boxes_center % matched_strides.unsqueeze(-1).float()
@@ -346,8 +331,6 @@ class Yolov3(nn.Module):
             gt_deltas_wh = gt_boxes[..., 2:] - gt_boxes[...,:2]
             gt_deltas_wh /= matched_anchors_wh
             gt_deltas_wh = torch.log(gt_deltas_wh+1e-8)
-            # print(gt_boxes_center, matched_strides.unsqueeze(-1))
-            # assert False
                 
             grid_index = grid_index.int()
             grid_index_x = grid_index[..., 0]

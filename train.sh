@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export CUDA_VISIBLE_DEVICES=4,5,6,7
 export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # maskrcnn train
@@ -22,11 +22,11 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # yolov3 train
 # ===================================
 python projects/Yolov3/train_net.py \
-    --num-gpus 1 \
+    --num-gpus 4 \
     --resume \
     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
-    SOLVER.IMS_PER_BATCH 1 SOLVER.BASE_LR 0.001 \
-    MODEL.WEIGHTS weights/yolov3.pth
+    SOLVER.IMS_PER_BATCH 8 SOLVER.BASE_LR 0.001
+    # MODEL.WEIGHTS weights/yolov3.pth
 
 
 # ===================================
