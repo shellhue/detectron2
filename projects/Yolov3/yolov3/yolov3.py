@@ -1,5 +1,6 @@
 import math
 import torch
+import time
 import numpy as np
 from torch import nn
 import fvcore.nn.weight_init as weight_init
@@ -7,16 +8,21 @@ import torch.nn.functional as F
 
 from detectron2.structures import Boxes, ImageList, Instances, pairwise_iou
 from detectron2.modeling import META_ARCH_REGISTRY, build_backbone, build_anchor_generator
-# from detectron2.modeling import build_grid_generator, build_stride_generator
+
 from detectron2.modeling.box_regression import Box2BoxTransform
 from detectron2.modeling.matcher import Matcher
 
 from detectron2.layers import batched_nms
-
+from detectron2.utils.logger import log_every_n
+from detectron2.utils.comm import is_main_process
+from detectron2.utils.logger import log_every_n_seconds
 
 from .yolov3_box_predictor import Yolov3Head
 from .grid_generator import build_grid_generator
 from .stride_generator import build_stride_generator
+
+import logging
+logger = logging.getLogger("yolov3")
 
 @META_ARCH_REGISTRY.register()
 class Yolov3(nn.Module):
@@ -63,6 +69,8 @@ class Yolov3(nn.Module):
 
         self.bce_loss = nn.BCELoss()
         self.sigmoid = nn.Sigmoid()
+        if is_main_process():
+            self.timer = time.time()
 
     def forward(self, batched_inputs):
         """
@@ -166,12 +174,13 @@ class Yolov3(nn.Module):
         # reshape to NR
         predicts_confidence_logits = [p.reshape(-1) for p in predicts_confidence_logits]
         predicts_confidence_logits = torch.cat(predicts_confidence_logits, dim=0)
-        predicts_confidence_logits = self.sigmoid(predicts_confidence_logits)
+        predicts_confidence = self.sigmoid(predicts_confidence_logits)
 
         # reshape to NRxK
         predicts_classes_logits = [p.reshape(-1, self.num_classes) for p in predicts_classes_logits]
         predicts_classes_logits = torch.cat(predicts_classes_logits, dim=0)
-
+        predicts_classes = nn.Softmax()(predicts_classes_logits)
+        
         # reshape to NRx4
         predicts_anchor_deltas = [p.reshape(-1, 4) for p in predicts_anchor_deltas]
         predicts_anchor_deltas = torch.cat(predicts_anchor_deltas, dim=0)
@@ -201,16 +210,35 @@ class Yolov3(nn.Module):
         loss_wh = torch.clamp(loss_wh, 0, 5)
 
         # loss confidence
-        loss_conf = self.bce_loss(predicts_confidence_logits[truth_mask], truth_mask[truth_mask].float()) * 0.005 + self.bce_loss(predicts_confidence_logits[negative_mask], truth_mask[negative_mask].float()) * 0.995
+        loss_conf_obj = self.bce_loss(predicts_confidence[truth_mask], truth_mask[truth_mask].float())
 
+        loss_conf_noobj = self.bce_loss(predicts_confidence[negative_mask], truth_mask[negative_mask].float())
+        
         # loss class
         loss_classes = F.cross_entropy(predicts_classes_logits[truth_mask], gt_classes[truth_mask].long())
 
+
+        # Metrics
+        gt_classes_idx = gt_classes[truth_mask]
+        gt_classes_range_idx = torch.arange(gt_classes_idx.size()[0])
+
+        cls_acc = 100 * predicts_classes[truth_mask][gt_classes_range_idx.long(), gt_classes_idx.long()].mean()
+        conf_obj = predicts_confidence[truth_mask].mean()
+        conf_noobj = predicts_confidence[negative_mask].mean()
+
+        if self.timer:
+            now = time.time()
+            if now - self.timer > 10:
+                # logger.info("cls_acc: {} conf_obj: {} conf_noobj: {}".format(cls_acc, conf_obj, conf_noobj))
+                print("========cls_acc: {:.4f} conf_obj: {:.4f} conf_noobj: {:.4f}".format(cls_acc, conf_obj, conf_noobj))
+                self.timer = now
+        
         zoom = 1000
         return {
             "loss_xy": loss_xy * 0.001 * zoom,
             "loss_wh": loss_wh * 0.001 * zoom,
-            "loss_conf": loss_conf * 0.997 * zoom,
+            "loss_conf_obj": loss_conf_obj * 0.005 * zoom,
+            "loss_conf_noobj": loss_conf_noobj * 0.992 * zoom,
             "loss_classes": loss_classes * 0.001 * zoom
         }
 
