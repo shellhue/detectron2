@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7
 export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # maskrcnn train
@@ -21,12 +21,21 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # yolov3 train
 # ===================================
-python projects/Yolov3/train_net.py \
-    --num-gpus 1 \
-    --resume \
-    --config-file projects/Yolov3/configs/yolov3_1x.yaml \
-    SOLVER.IMS_PER_BATCH 2 SOLVER.BASE_LR 0.001
+# python projects/Yolov3/train_net.py \
+#     --num-gpus 7 \
+#     --resume \
+#     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
+#     SOLVER.IMS_PER_BATCH 14 SOLVER.BASE_LR 0.001
     # MODEL.WEIGHTS weights/yolov3.pth
+
+# ===================================
+# smoke call train
+# ===================================
+python projects/SmokeCall/train_net.py \
+    --num-gpus 7 \
+    --resume \
+    --config-file projects/SmokeCall/smoke_call_1x.yaml \
+    SOLVER.IMS_PER_BATCH 224 SOLVER.BASE_LR 0.001 MODEL.WEIGHTS weights/darknet53.pth
 
 
 # ===================================

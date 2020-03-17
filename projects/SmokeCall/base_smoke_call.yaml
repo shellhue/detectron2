@@ -1,0 +1,15 @@
+_BASE_: "base_backbone.yaml"
+
+MODEL:
+  BACKBONE:
+    NAME: "build_darknet_backbone"
+  DAKRNET:
+    NORM: "BN"
+    NUM_CLASSES: 3
+    OUT_FEATURES: ["linear"]
+    STEM_OUT_CHANNELS: 32
+    DEPTH: 53
+
+DATASETS:
+  TRAIN: ("smoke_call_train",)
+  TEST: ("smoke_call_val",)

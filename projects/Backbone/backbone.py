@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 from detectron2.structures import Boxes, ImageList, Instances, pairwise_iou
 from detectron2.modeling import META_ARCH_REGISTRY, build_backbone
-import nets
+from .nets import build_darknet_backbone
 
 @META_ARCH_REGISTRY.register()
 class ClassificationBackbone(nn.Module):

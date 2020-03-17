@@ -1,0 +1,13 @@
+MODEL:
+  META_ARCHITECTURE: "ClassificationBackbone"
+  DEVICE: "cuda"
+  MASK_ON: False
+  BACKBONE:
+    FREEZE_AT: 0
+
+DATASETS:
+  TRAIN: ("imagenet_train",)
+  TEST: ("imagenet_val",)
+
+DATALOADER:
+  NUM_WORKERS: 5

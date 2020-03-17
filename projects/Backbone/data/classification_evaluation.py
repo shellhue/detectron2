@@ -32,7 +32,7 @@ class ClassificationEvaluator(DatasetEvaluator):
         self._class_names = meta.thing_classes
         self._class_ids = meta.class_ids
         self._class_id_to_name = meta.class_id_to_name
-        self._class_id_to_short_name = meta.class_id_to_short_name
+        # self._class_id_to_short_name = meta.class_id_to_short_name
         self._cpu_device = torch.device("cpu")
         self._logger = logging.getLogger(__name__)
         self._predictions = {}

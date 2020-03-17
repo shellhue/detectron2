@@ -24,12 +24,12 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # yolov3 test
 # ===================================
-python projects/Yolov3/train_net.py \
-    --num-gpus 2 \
-    --config-file projects/Yolov3/configs/yolov3_1x.yaml \
-    --resume \
-    --eval-only \
-    MODEL.WEIGHTS weights/yolov3.pth
+# python projects/Yolov3/train_net.py \
+#     --num-gpus 2 \
+#     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
+#     --resume \
+#     --eval-only 
+    # MODEL.WEIGHTS weights/yolov3.pth
 
 
 # ===================================
@@ -66,12 +66,12 @@ python projects/Yolov3/train_net.py \
 # ===================================
 # darknet53 test
 # ===================================
-# python projects/Backbone/train_net.py \
-#     --num-gpus 8 \
-#     --eval-only \
-#     --resume \
-#     --config-file projects/Backbone/configs/darknet_4x.yaml \
-#     MODEL.WEIGHTS weights/darknet53.pth
+python projects/SmokeCall/train_net.py \
+    --num-gpus 4 \
+    --eval-only \
+    --resume \
+    --config-file projects/Backbone/configs/darknet_4x.yaml \
+    MODEL.WEIGHTS weights/darknet53.pth
 
 
 # ===================================

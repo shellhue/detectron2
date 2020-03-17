@@ -179,7 +179,7 @@ class Yolov3(nn.Module):
         # reshape to NRxK
         predicts_classes_logits = [p.reshape(-1, self.num_classes) for p in predicts_classes_logits]
         predicts_classes_logits = torch.cat(predicts_classes_logits, dim=0)
-        predicts_classes = nn.Softmax()(predicts_classes_logits)
+        predicts_classes = nn.Softmax(dim=-1)(predicts_classes_logits)
         
         # reshape to NRx4
         predicts_anchor_deltas = [p.reshape(-1, 4) for p in predicts_anchor_deltas]
@@ -226,20 +226,19 @@ class Yolov3(nn.Module):
         conf_obj = predicts_confidence[truth_mask].mean()
         conf_noobj = predicts_confidence[negative_mask].mean()
 
-        if self.timer:
-            now = time.time()
-            if now - self.timer > 10:
-                # logger.info("cls_acc: {} conf_obj: {} conf_noobj: {}".format(cls_acc, conf_obj, conf_noobj))
-                print("========cls_acc: {:.4f} conf_obj: {:.4f} conf_noobj: {:.4f}".format(cls_acc, conf_obj, conf_noobj))
-                self.timer = now
+        # if self.timer:
+        #     now = time.time()
+        #     if now - self.timer > 10:
+        #         # logger.info("cls_acc: {} conf_obj: {} conf_noobj: {}".format(cls_acc, conf_obj, conf_noobj))
+        #         print("========cls_acc: {:.4f} conf_obj: {:.4f} conf_noobj: {:.4f}".format(cls_acc, conf_obj, conf_noobj))
+        #         self.timer = now
         
-        zoom = 1000
         return {
-            "loss_xy": loss_xy * 0.001 * zoom,
-            "loss_wh": loss_wh * 0.001 * zoom,
-            "loss_conf_obj": loss_conf_obj * 0.005 * zoom,
-            "loss_conf_noobj": loss_conf_noobj * 0.992 * zoom,
-            "loss_classes": loss_classes * 0.001 * zoom
+            "loss_xy": loss_xy,
+            "loss_wh": loss_wh,
+            "loss_conf_obj": loss_conf_obj,
+            "loss_conf_noobj": loss_conf_noobj * 10000,
+            "loss_classes": loss_classes
         }
 
     @torch.no_grad()

@@ -7,21 +7,24 @@ from .fetcher import get_classes
 def _get_imagenet_metadata(classes_file):
     classes = get_classes(classes_file)
     class_id_to_name = {}
-    class_id_to_short_name = {}
+    # class_id_to_short_name = {}
     class_name = []
     class_id = []
     for i, name in enumerate(classes):
-        short_name, human_readale_name = name.split(":")
+        if len(name.split(":")) > 1:
+            short_name, human_readale_name = name.split(":")
+        else:
+            human_readale_name = name
         readable_name = human_readale_name.split(",")[0]
         class_id_to_name[i] = readable_name
-        class_id_to_short_name[i] = short_name
+        # class_id_to_short_name[i] = short_name
         class_name.append(readable_name)
         class_id.append(i)
     return {
         "class_ids": class_id,
         "thing_classes": class_name,
         "class_id_to_name": class_id_to_name,
-        "class_id_to_short_name": class_id_to_short_name
+        # "class_id_to_short_name": class_id_to_short_name
     }
 
 
@@ -57,8 +60,18 @@ _ALL_IMAGENET_SPLITS = {
     "imagenet_val": ("imagenet/val_remote.txt", "imagenet/classes.txt")
 }
 
+_ALL_SMOKE_PHONE_SPLITS = {
+    "smoke_call_train": ("smoke_phone/train.txt", "smoke_phone/classes.txt"),
+    "smoke_call_val": ("smoke_phone/val.txt", "smoke_phone/classes.txt")
+}
+
 def register_all_imagenet(root="datasets"):
     for name, (img_info_file, class_file) in _ALL_IMAGENET_SPLITS.items():
         register_imagenet_dataset(name, class_file, img_info_file, root)
 
+def register_all_smoke_phone(root="datasets"):
+    for name, (img_info_file, class_file) in _ALL_SMOKE_PHONE_SPLITS.items():
+        register_imagenet_dataset(name, class_file, img_info_file, root)
+
 register_all_imagenet()
+register_all_smoke_phone()
