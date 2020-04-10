@@ -66,10 +66,20 @@ _ALL_SMOKE_PHONE_SPLITS = {
 }
 
 def register_all_imagenet(root="datasets"):
+    if not root.startswith("/"):
+        file_path = __file__
+        components = file_path.split('/')[:-4]
+        components.append(root)
+        root = "/".join(components)
     for name, (img_info_file, class_file) in _ALL_IMAGENET_SPLITS.items():
         register_imagenet_dataset(name, class_file, img_info_file, root)
 
 def register_all_smoke_phone(root="datasets"):
+    if not root.startswith("/"):
+        file_path = __file__
+        components = file_path.split('/')[:-4]
+        components.append(root)
+        root = "/".join(components)
     for name, (img_info_file, class_file) in _ALL_SMOKE_PHONE_SPLITS.items():
         register_imagenet_dataset(name, class_file, img_info_file, root)
 

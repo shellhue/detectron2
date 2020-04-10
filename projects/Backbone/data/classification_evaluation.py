@@ -5,6 +5,7 @@ import logging
 import numpy as np
 import os
 from collections import OrderedDict
+from collections import defaultdict
 import torch
 
 from detectron2.data import MetadataCatalog
@@ -80,10 +81,16 @@ class ClassificationEvaluator(DatasetEvaluator):
         top5_tp = 0
         total_sample_num = len(predits)
 
+        top1_tp_per_cls = defaultdict(lambda:0)
+        top1_sample_num_per_cls = defaultdict(lambda:0)
+
         for i, predict in predits.items():
             gt_label = gts[i]
+            
+            top1_sample_num_per_cls[gt_label] = top1_sample_num_per_cls[gt_label] + 1
             if gt_label == predict[0]:
                 top1_tp += 1
+                top1_tp_per_cls[gt_label] = top1_tp_per_cls[gt_label] + 1
             if gt_label in predict:
                 top5_tp += 1
 
@@ -92,5 +99,8 @@ class ClassificationEvaluator(DatasetEvaluator):
             "top1": top1_tp / total_sample_num,
             "top5": top5_tp / total_sample_num
         }
-
+        for i, cls_name in enumerate(self._class_names):
+            ret["cls"]["{}_top1".format(cls_name)] = top1_tp_per_cls[i]/max(top1_sample_num_per_cls[i],1)
+        for k, v in ret["cls"].items():
+            print("{0: >20}:".format(k), "{:.4f}".format(v))
         return ret

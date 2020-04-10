@@ -10,11 +10,12 @@ def add_backbone_config(cfg):
     Add config for tridentnet.
     """
     _C = cfg
-    
+    _C.MODEL.BACKBONE.CLASS_WEIGHTS = [1.0]
+    _C.MODEL.BACKBONE.NUM_CLASSES = 1000
+
     # Darknet
     _C.MODEL.DAKRNET = CN()
     _C.MODEL.DAKRNET.NORM = "BN"
-    _C.MODEL.DAKRNET.NUM_CLASSES = 1000
     _C.MODEL.DAKRNET.STEM_OUT_CHANNELS = 32
     _C.MODEL.DAKRNET.OUT_FEATURES = ["linear"]
     _C.MODEL.DAKRNET.DEPTH = 53

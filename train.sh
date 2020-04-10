@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7
+export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6
 export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # maskrcnn train
@@ -31,11 +31,20 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # smoke call train
 # ===================================
-python projects/SmokeCall/train_net.py \
-    --num-gpus 7 \
+# python projects/SmokeCall/train_net.py \
+#     --num-gpus 7 \
+#     --resume \
+#     --config-file projects/SmokeCall/smoke_call_1x.yaml \
+#     SOLVER.IMS_PER_BATCH 224 SOLVER.BASE_LR 0.001 MODEL.WEIGHTS weights/darknet53_model_only.pth
+
+# ===================================
+# ultralytics/yolov3
+# ===================================
+python projects/Universal/train_net.py \
+    --num-gpus 6 \
     --resume \
-    --config-file projects/SmokeCall/smoke_call_1x.yaml \
-    SOLVER.IMS_PER_BATCH 224 SOLVER.BASE_LR 0.001 MODEL.WEIGHTS weights/darknet53.pth
+    --config-file projects/Universal/base_backbone.yaml \
+    SOLVER.IMS_PER_BATCH 48
 
 
 # ===================================

@@ -7,7 +7,7 @@ MODEL:
 
 DATASETS:
   TRAIN: ("imagenet_train",)
-  TEST: ("imagenet_val",)
+  TEST: ("smoke_call_val",)
 
 DATALOADER:
   NUM_WORKERS: 5

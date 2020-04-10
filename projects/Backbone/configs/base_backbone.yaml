@@ -4,6 +4,8 @@ MODEL:
   MASK_ON: False
   BACKBONE:
     FREEZE_AT: 0
+    CLASS_WEIGHTS: [1.0]
+    NUM_CLASSES: 1000
 
 DATASETS:
   TRAIN: ("imagenet_train",)

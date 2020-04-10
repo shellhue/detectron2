@@ -28,12 +28,12 @@ class CustomDetectionCheckpointer(DetectionCheckpointer):
                         new_ckpt_state_dict[nk] = v.clone()
                 if not from_backbone:
                     new_ckpt_state_dict[k] = v.clone()
-            # checkpoint["model"] = new_ckpt_state_dict
+            checkpoint["model"] = new_ckpt_state_dict
             # print(checkpoint.keys())
             # assert False
-            if True:
-                checkpoint.clear()
-                checkpoint["model"] = new_ckpt_state_dict
+            # if True:
+            #     checkpoint.clear()
+            #     checkpoint["model"] = new_ckpt_state_dict
             super()._load_model(checkpoint)
         
 

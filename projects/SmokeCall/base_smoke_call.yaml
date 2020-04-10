@@ -3,9 +3,10 @@ _BASE_: "base_backbone.yaml"
 MODEL:
   BACKBONE:
     NAME: "build_darknet_backbone"
+    CLASS_WEIGHTS: [1.0, 10.0, 10.0]
+    NUM_CLASSES: 3
   DAKRNET:
     NORM: "BN"
-    NUM_CLASSES: 3
     OUT_FEATURES: ["linear"]
     STEM_OUT_CHANNELS: 32
     DEPTH: 53

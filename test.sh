@@ -66,13 +66,21 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # darknet53 test
 # ===================================
+# python projects/SmokeCall/train_net.py \
+#     --num-gpus 4 \
+#     --eval-only \
+#     --resume \
+#     --config-file projects/Backbone/configs/darknet_4x.yaml \
+#     MODEL.WEIGHTS weights/darknet53.pth
+
+# ===================================
+# smoke test
+# ===================================
 python projects/SmokeCall/train_net.py \
     --num-gpus 4 \
     --eval-only \
     --resume \
-    --config-file projects/Backbone/configs/darknet_4x.yaml \
-    MODEL.WEIGHTS weights/darknet53.pth
-
+    --config-file projects/SmokeCall/smoke_call_1x.yaml
 
 # ===================================
 # yolov3 input img

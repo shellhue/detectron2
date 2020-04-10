@@ -311,4 +311,4 @@ def build_darknet_backbone(cfg, input_shape):
             for block in blocks:
                 block.freeze()
         stages.append(blocks)
-    return Darknet(stem, stages, out_features=out_features, num_classes=cfg.MODEL.DAKRNET.NUM_CLASSES)
+    return Darknet(stem, stages, out_features=out_features, num_classes=cfg.MODEL.BACKBONE.NUM_CLASSES)

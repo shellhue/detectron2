@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from PIL import Image
 from torchvision import transforms
-
+import random
 
 """
 This file contains the default mapping that's applied to "dataset dicts".
@@ -40,8 +40,9 @@ class SmokeDatasetMapper:
             ])
         else:
             self.tfs = transforms.Compose([
-                transforms.Resize(256),
-                transforms.CenterCrop(224),
+                transforms.Resize(20),
+                transforms.Resize(224),
+                # transforms.CenterCrop(224),
                 transforms.ToTensor(),
             ])
 
@@ -60,6 +61,13 @@ class SmokeDatasetMapper:
             rgbimg = Image.new("RGB", img.size)
             rgbimg.paste(img)
             img = rgbimg
+        if self.is_train:
+            self.tfs = transforms.Compose([
+                transforms.Resize(random.randint(20, 256)), # 由于头像分辨率在实际中变化较大，这里模拟多分辨率输入的情形
+                transforms.RandomResizedCrop(224), # 再把头像resize到固定分辨率
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+            ])
         img = self.tfs(img)
         dataset_dict["image"] = img
 

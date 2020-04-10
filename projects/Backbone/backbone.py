@@ -14,21 +14,25 @@ class ClassificationBackbone(nn.Module):
     def __init__(self, cfg=None):
         super(ClassificationBackbone, self).__init__()
         self.device = torch.device(cfg.MODEL.DEVICE)
-        self.num_classes = 1000
+        self.num_classes = cfg.MODEL.BACKBONE
 
         self.backbone = build_backbone(cfg)
-
+        
+        self.class_weights = cfg.MODEL.BACKBONE.CLASS_WEIGHTS
+        if len(cfg.MODEL.BACKBONE.CLASS_WEIGHTS) == 1:
+            self.class_weights = [cfg.MODEL.BACKBONE.CLASS_WEIGHTS] * self.num_classes
+        self.class_weights = torch.tensor(self.class_weights).to(self.device)
 
         self.to(self.device)
 
     def forward(self, batched_inputs):
         images = self.preprocess_image(batched_inputs)
-        labels = self.get_gt_labels(batched_inputs)
         features = self.backbone(images.tensor)["linear"]
 
         if self.training:
+            labels = self.get_gt_labels(batched_inputs)
             losses = {
-                "classes": F.cross_entropy(features, labels.long())
+                "classes": F.cross_entropy(features, labels.long(), weight=self.class_weights)
             }
             return losses
         else:
