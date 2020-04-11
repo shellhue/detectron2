@@ -165,7 +165,8 @@ class Darknet(Backbone):
                 If None, will return the output of the last layer.
         """
         super(Darknet, self).__init__()
-        assert ("linear" in out_features and num_classes is not None) or ("linear" not in out_features and num_classes in [None, 0]), "linear output needs num_classes not None"
+        if "linear" in out_features:
+            assert num_classes is not None and num_classes > 0, "linear output needs num_classes not None"
         self.stem = stem
         self.num_classes = num_classes
 
@@ -311,4 +312,5 @@ def build_darknet_backbone(cfg, input_shape):
             for block in blocks:
                 block.freeze()
         stages.append(blocks)
+
     return Darknet(stem, stages, out_features=out_features, num_classes=cfg.MODEL.BACKBONE.NUM_CLASSES)

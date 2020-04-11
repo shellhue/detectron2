@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=4,5,6,7
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # maskrcnn test
@@ -24,12 +24,12 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # yolov3 test
 # ===================================
-# python projects/Yolov3/train_net.py \
-#     --num-gpus 2 \
-#     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
-#     --resume \
-#     --eval-only 
-    # MODEL.WEIGHTS weights/yolov3.pth
+python projects/Yolov3/train_net.py \
+    --num-gpus 1 \
+    --config-file projects/Yolov3/configs/yolov3_1x.yaml \
+    --resume \
+    --eval-only \
+    MODEL.WEIGHTS weights/yolov3.pth
 
 
 # ===================================
@@ -76,11 +76,11 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # smoke test
 # ===================================
-python projects/SmokeCall/train_net.py \
-    --num-gpus 4 \
-    --eval-only \
-    --resume \
-    --config-file projects/SmokeCall/smoke_call_1x.yaml
+# python projects/SmokeCall/train_net.py \
+#     --num-gpus 4 \
+#     --eval-only \
+#     --resume \
+#     --config-file projects/SmokeCall/smoke_call_1x.yaml
 
 # ===================================
 # yolov3 input img

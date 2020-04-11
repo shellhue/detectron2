@@ -16,6 +16,7 @@ from detectron2.engine import hooks
 from detectron2.evaluation import COCOEvaluator, verify_results
 
 from yolov3 import add_yolov3_config, CustomDetectionCheckpointer
+from projects.Backbone.config import add_backbone_config
 
 class Trainer(DefaultTrainer):
     def build_dectetion_checkpoint(self, model, output_dir, optimizer, scheduler):
@@ -87,6 +88,7 @@ def setup(args):
     Create configs and perform basic setups.
     """
     cfg = get_cfg()
+    add_backbone_config(cfg)
     add_yolov3_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)

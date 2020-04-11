@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # maskrcnn train
@@ -41,10 +41,10 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ultralytics/yolov3
 # ===================================
 python projects/Universal/train_net.py \
-    --num-gpus 6 \
+    --num-gpus 8 \
     --resume \
     --config-file projects/Universal/base_backbone.yaml \
-    SOLVER.IMS_PER_BATCH 48
+    SOLVER.IMS_PER_BATCH 64
 
 
 # ===================================
