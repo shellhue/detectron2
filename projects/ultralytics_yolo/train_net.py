@@ -79,7 +79,7 @@ class Trainer(DefaultTrainer):
         """
 
         model = ProxyModel(cfg=cfg)
-        logger = logging.getLogger(__name__)
+        logger = logging.getLogger("detectron2")
         logger.info("Model:\n{}".format(model))
         model.train()
         return model

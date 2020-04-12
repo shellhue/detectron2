@@ -16,7 +16,7 @@ from utils.utils import *
 
 class ProxyModel(nn.Module):
     def __init__(self, cfg=None):
-        super(ContainerModel, self).__init__()
+        super(ProxyModel, self).__init__()
         self.device = torch.device(cfg.MODEL.DEVICE)
         self.back_model = create_yolov3_model(weights="/home/huangzeyu/tmp/yolov3/weights/darknet53.conv.74")
         self.to(self.device)

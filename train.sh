@@ -26,7 +26,7 @@ export PYTHONPATH=".:${PYTHONPATH}"
 #     --resume \
 #     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
 #     SOLVER.IMS_PER_BATCH 14 SOLVER.BASE_LR 0.001
-    # MODEL.WEIGHTS weights/yolov3.pth
+#     MODEL.WEIGHTS weights/yolov3.pth
 
 # ===================================
 # smoke call train
