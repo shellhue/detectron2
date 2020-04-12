@@ -44,10 +44,10 @@ class ProxyModel(nn.Module):
     def preprocess_image(self, imgs):
         imgs = imgs.float() / 255.0
         
-        img_size = random.randrange(self.img_sz_min, self.img_sz_max + 1) * 32
-        sf = img_size / max(imgs.shape[2:])  # scale factor
-        if sf != 1:
-            ns = [math.ceil(x * sf / 32.) * 32 for x in imgs.shape[2:]]  # new shape (stretched to 32-multiple)
-            imgs = F.interpolate(imgs, size=ns, mode='bilinear', align_corners=False)
+        # img_size = random.randrange(self.img_sz_min, self.img_sz_max + 1) * 32
+        # sf = img_size / max(imgs.shape[2:])  # scale factor
+        # if sf != 1:
+        #     ns = [math.ceil(x * sf / 32.) * 32 for x in imgs.shape[2:]]  # new shape (stretched to 32-multiple)
+        #     imgs = F.interpolate(imgs, size=ns, mode='bilinear', align_corners=False)
 
         return imgs
