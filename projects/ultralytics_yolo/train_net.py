@@ -19,16 +19,11 @@ from detectron2.engine import DefaultTrainer, default_argument_parser, default_s
 from detectron2.data import DatasetCatalog, MetadataCatalog
 from detectron2.evaluation import COCOEvaluator, verify_results
 
-from yolo_data_loader import build_yolo_detection_train_loader
-from yolo_data_loader import build_yolo_detection_test_loader
-# from data.classification_evaluation import ClassificationEvaluator
-# from data.data_loader import build_classification_train_loader, build_classification_test_loader
-# from .data.data_loader import build_classification_test_loader
-# from config import add_backbone_config
-# import backbone
+from data_loader import build_yolo_detection_train_loader
+from data_loader import build_yolo_detection_test_loader
 
 
-from container_model import ContainerModel
+from proxy_model import ProxyModel
 class Trainer(DefaultTrainer):
     # @classmethod
     # def build_evaluator(cls, cfg, dataset_name, output_folder=None):
@@ -83,7 +78,7 @@ class Trainer(DefaultTrainer):
         Overwrite it if you'd like a different model.
         """
 
-        model = ContainerModel(cfg=cfg)
+        model = ProxyModel(cfg=cfg)
         logger = logging.getLogger(__name__)
         logger.info("Model:\n{}".format(model))
         model.train()

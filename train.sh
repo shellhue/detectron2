@@ -40,10 +40,10 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # ultralytics/yolov3
 # ===================================
-python projects/Universal/train_net.py \
+python projects/ultralytics_yolo/train_net.py \
     --num-gpus 8 \
     --resume \
-    --config-file projects/Universal/base_backbone.yaml \
+    --config-file projects/ultralytics_yolo/config.yaml \
     SOLVER.IMS_PER_BATCH 64
 
 
