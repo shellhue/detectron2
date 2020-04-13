@@ -1,17 +1,20 @@
+# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
+import copy
 import logging
 import os
-import torch
 from caffe2.proto import caffe2_pb2
 from torch import nn
 
 from detectron2.config import CfgNode as CN
 
-from .caffe2_export import export_caffe2_detection_model, run_and_save_graph
+from .caffe2_export import export_caffe2_detection_model
+from .caffe2_export import export_onnx_model as export_onnx_model_impl
+from .caffe2_export import run_and_save_graph
 from .caffe2_inference import ProtobufDetectionModel
 from .caffe2_modeling import META_ARCH_CAFFE2_EXPORT_TYPE_MAP, convert_batched_inputs_to_c2_format
-from .shared import get_pb_arg_vali, save_graph
+from .shared import get_pb_arg_vali, get_pb_arg_vals, save_graph
 
-__all__ = ["add_export_config", "export_caffe2_model", "Caffe2Model"]
+__all__ = ["add_export_config", "export_caffe2_model", "Caffe2Model", "export_onnx_model"]
 
 
 def add_export_config(cfg):
@@ -53,6 +56,33 @@ def export_caffe2_model(cfg, model, inputs):
     c2_format_input = c2_compatible_model.get_caffe2_inputs(inputs)
     predict_net, init_net = export_caffe2_detection_model(c2_compatible_model, c2_format_input)
     return Caffe2Model(predict_net, init_net)
+
+
+def export_onnx_model(cfg, model, inputs):
+    """
+    Export a detectron2 model to ONNX format.
+    Note that the exported model contains custom ops only available in caffe2, therefore it
+    cannot be directly executed by other runtime. Post-processing or transformation passes
+    may be applied on the model to accommodate different runtimes.
+
+    Args:
+        cfg (CfgNode): a detectron2 config, with extra export-related options
+            added by :func:`add_export_config`.
+        model (nn.Module): a model built by
+            :func:`detectron2.modeling.build_model`.
+            It will be modified by this function.
+        inputs: sample inputs that the given model takes for inference.
+            Will be used to trace the model.
+
+    Returns:
+        onnx.ModelProto: an onnx model.
+    """
+    model = copy.deepcopy(model)
+    assert isinstance(cfg, CN), cfg
+    C2MetaArch = META_ARCH_CAFFE2_EXPORT_TYPE_MAP[cfg.MODEL.META_ARCHITECTURE]
+    c2_compatible_model = C2MetaArch(cfg, model)
+    c2_format_input = c2_compatible_model.get_caffe2_inputs(inputs)
+    return export_onnx_model_impl(c2_compatible_model, (c2_format_input,))
 
 
 class Caffe2Model(nn.Module):
@@ -114,10 +144,9 @@ class Caffe2Model(nn.Module):
             save_graph(self._predict_net, output_file, op_only=False)
         else:
             size_divisibility = get_pb_arg_vali(self._predict_net, "size_divisibility", 0)
-            inputs = convert_batched_inputs_to_c2_format(
-                inputs, size_divisibility, torch.device("cpu")
-            )
-            inputs = [x.numpy() for x in inputs]
+            device = get_pb_arg_vals(self._predict_net, "device", b"cpu").decode("ascii")
+            inputs = convert_batched_inputs_to_c2_format(inputs, size_divisibility, device)
+            inputs = [x.cpu().numpy() for x in inputs]
             run_and_save_graph(self._predict_net, self._init_net, inputs, output_file)
 
     @staticmethod

@@ -37,7 +37,8 @@ class ColorMode(Enum):
 
     Attributes:
         IMAGE: Picks a random color for every instance and overlay segmentations with low opacity.
-        SEGMENTATION: Let instances of the same category have similar colors, and overlay them with
+        SEGMENTATION: Let instances of the same category have similar colors
+            (from metadata.thing_colors), and overlay them with
             high opacity. This provides more attention on the quality of segmentation.
         IMAGE_BW: same as IMAGE, but convert all areas without masks to gray-scale.
             Only available for drawing per-instance mask predictions.
@@ -489,6 +490,11 @@ class Visualizer:
             boxes = [BoxMode.convert(x["bbox"], x["bbox_mode"], BoxMode.XYXY_ABS) for x in annos]
 
             labels = [x["category_id"] for x in annos]
+            colors = None
+            if self._instance_mode == ColorMode.SEGMENTATION and self.metadata.get("thing_colors"):
+                colors = [
+                    self._jitter([x / 255 for x in self.metadata.thing_colors[c]]) for c in labels
+                ]
             names = self.metadata.get("thing_classes", None)
             if names:
                 labels = [names[i] for i in labels]
@@ -496,7 +502,9 @@ class Visualizer:
                 "{}".format(i) + ("|crowd" if a.get("iscrowd", 0) else "")
                 for i, a in zip(labels, annos)
             ]
-            self.overlay_instances(labels=labels, boxes=boxes, masks=masks, keypoints=keypts)
+            self.overlay_instances(
+                labels=labels, boxes=boxes, masks=masks, keypoints=keypts, assigned_colors=colors
+            )
 
         sem_seg = dic.get("sem_seg", None)
         if sem_seg is None and "sem_seg_file_name" in dic:

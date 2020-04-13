@@ -3,8 +3,6 @@ import itertools
 from typing import Any, Dict, List, Tuple, Union
 import torch
 
-from detectron2.layers import cat
-
 
 class Instances:
     """
@@ -125,6 +123,12 @@ class Instances:
             If `item` is a string, return the data in the corresponding field.
             Otherwise, returns an `Instances` where all fields are indexed by `item`.
         """
+        if type(item) == int:
+            if item >= len(self) or item < -len(self):
+                raise IndexError("Instances index out of range!")
+            else:
+                item = slice(item, None, len(self))
+
         ret = Instances(self._image_size)
         for k, v in self._fields.items():
             ret.set(k, v[item])
@@ -160,7 +164,7 @@ class Instances:
             values = [i.get(k) for i in instance_lists]
             v0 = values[0]
             if isinstance(v0, torch.Tensor):
-                values = cat(values, dim=0)
+                values = torch.cat(values, dim=0)
             elif isinstance(v0, list):
                 values = list(itertools.chain(*values))
             elif hasattr(type(v0), "cat"):
@@ -175,16 +179,7 @@ class Instances:
         s += "num_instances={}, ".format(len(self))
         s += "image_height={}, ".format(self._image_size[0])
         s += "image_width={}, ".format(self._image_size[1])
-        s += "fields=[{}])".format(", ".join(self._fields.keys()))
+        s += "fields=[{}])".format(", ".join((f"{k}: {v}" for k, v in self._fields.items())))
         return s
 
-    def __repr__(self) -> str:
-        s = self.__class__.__name__ + "("
-        s += "num_instances={}, ".format(len(self))
-        s += "image_height={}, ".format(self._image_size[0])
-        s += "image_width={}, ".format(self._image_size[1])
-        s += "fields=["
-        for k, v in self._fields.items():
-            s += "{} = {}, ".format(k, v)
-        s += "])"
-        return s
+    __repr__ = __str__

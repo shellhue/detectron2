@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 """
 Detectron2 training script with a plain training loop.
@@ -153,7 +154,7 @@ def do_train(cfg, model, resume=False):
             storage.step()
 
             loss_dict = model(data)
-            losses = sum(loss for loss in loss_dict.values())
+            losses = sum(loss_dict.values())
             assert torch.isfinite(losses).all(), loss_dict
 
             loss_dict_reduced = {k: v.item() for k, v in comm.reduce_dict(loss_dict).items()}
@@ -213,7 +214,7 @@ def main(args):
             model, device_ids=[comm.get_local_rank()], broadcast_buffers=False
         )
 
-    do_train(cfg, model)
+    do_train(cfg, model, resume=args.resume)
     return do_test(cfg, model)
 
 

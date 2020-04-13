@@ -86,7 +86,8 @@ def find_top_rpn_proposals(
 
     Returns:
         proposals (list[Instances]): list of N Instances. The i-th Instances
-            stores post_nms_topk object proposals for image i.
+            stores post_nms_topk object proposals for image i, sorted by their
+            objectness score in descending order.
     """
     image_sizes = images.image_sizes  # in (h, w) order
     num_images = len(image_sizes)
@@ -126,13 +127,23 @@ def find_top_rpn_proposals(
     for n, image_size in enumerate(image_sizes):
         boxes = Boxes(topk_proposals[n])
         scores_per_img = topk_scores[n]
+        lvl = level_ids
+
+        valid_mask = torch.isfinite(boxes.tensor).all(dim=1) & torch.isfinite(scores_per_img)
+        if not valid_mask.all():
+            if training:
+                raise FloatingPointError(
+                    "Predicted boxes or scores contain Inf/NaN. Training has diverged."
+                )
+            boxes = boxes[valid_mask]
+            scores_per_img = scores_per_img[valid_mask]
+            lvl = lvl[valid_mask]
         boxes.clip(image_size)
 
         # filter empty boxes
         keep = boxes.nonempty(threshold=min_box_side_len)
-        lvl = level_ids
         if keep.sum().item() != len(boxes):
-            boxes, scores_per_img, lvl = boxes[keep], scores_per_img[keep], level_ids[keep]
+            boxes, scores_per_img, lvl = boxes[keep], scores_per_img[keep], lvl[keep]
 
         keep = batched_nms(boxes.tensor, scores_per_img, lvl, nms_thresh)
         # In Detectron1, there was different behavior during training vs. testing.
@@ -142,7 +153,7 @@ def find_top_rpn_proposals(
         # As a result, the training behavior becomes batch-dependent,
         # and the configuration "POST_NMS_TOPK_TRAIN" end up relying on the batch size.
         # This bug is addressed in Detectron2 to make the behavior independent of batch size.
-        keep = keep[:post_nms_topk]
+        keep = keep[:post_nms_topk]  # keep is already sorted
 
         res = Instances(image_size)
         res.proposal_boxes = boxes[keep]

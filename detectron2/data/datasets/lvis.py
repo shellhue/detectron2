@@ -1,12 +1,13 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 import logging
 import os
-
-from fvcore.common.timer import Timer
-from detectron2.structures import BoxMode
 from fvcore.common.file_io import PathManager
-from detectron2.data import DatasetCatalog, MetadataCatalog
+from fvcore.common.timer import Timer
 
+from detectron2.data import DatasetCatalog, MetadataCatalog
+from detectron2.structures import BoxMode
+
+from .builtin_meta import _get_coco_instances_meta
 from .lvis_v0_5_categories import LVIS_CATEGORIES
 
 """
@@ -27,7 +28,7 @@ def register_lvis_instances(name, metadata, json_file, image_root):
         name (str): a name that identifies the dataset, e.g. "lvis_v0.5_train".
         metadata (dict): extra metadata associated with this dataset. It can be an empty dict.
         json_file (str): path to the json instance annotation file.
-        image_root (str): directory which contains all the images.
+        image_root (str or path-like): directory which contains all the images.
     """
     DatasetCatalog.register(name, lambda: load_lvis_json(json_file, image_root, name))
     MetadataCatalog.get(name).set(
@@ -154,6 +155,8 @@ def get_lvis_instances_meta(dataset_name):
     Returns:
         dict: LVIS metadata with keys: thing_classes
     """
+    if "cocofied" in dataset_name:
+        return _get_coco_instances_meta()
     if "v0.5" in dataset_name:
         return _get_lvis_instances_meta_v0_5()
     # There will be a v1 in the future

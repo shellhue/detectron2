@@ -443,19 +443,25 @@ def _generic_status_identifier(
 
 
 def infer_device_type(
-    predict_net: caffe2_pb2.NetDef, known_status: Dict[Tuple[str, int], Any]
+    predict_net: caffe2_pb2.NetDef,
+    known_status: Dict[Tuple[str, int], Any],
+    device_name_style: str = "caffe2",
 ) -> Dict[Tuple[str, int], str]:
-    """ Return the device type ("cpu" or "gpu") of each (versioned) blob """
+    """ Return the device type ("cpu" or "gpu"/"cuda") of each (versioned) blob """
+
+    assert device_name_style in ["caffe2", "pytorch"]
+    _CPU_STR = "cpu"
+    _GPU_STR = "gpu" if device_name_style == "caffe2" else "cuda"
 
     def _copy_cpu_to_gpu_updater(op, input_types, output_types):
-        if input_types[0] == "gpu" or output_types[0] == "cpu":
+        if input_types[0] == _GPU_STR or output_types[0] == _CPU_STR:
             _updater_raise(op, input_types, output_types)
-        return (["cpu"], ["gpu"])
+        return ([_CPU_STR], [_GPU_STR])
 
     def _copy_gpu_to_cpu_updater(op, input_types, output_types):
-        if input_types[0] == "cpu" or output_types[0] == "gpu":
+        if input_types[0] == _CPU_STR or output_types[0] == _GPU_STR:
             _updater_raise(op, input_types, output_types)
-        return (["gpu"], ["cpu"])
+        return ([_GPU_STR], [_CPU_STR])
 
     def _other_ops_updater(op, input_types, output_types):
         non_none_types = [x for x in input_types + output_types if x is not None]
@@ -665,7 +671,7 @@ def rename_op_input(
     - It requires the input is only consumed by this op.
     - This function modifies predict_net and init_net in-place.
     - When from_producer is enable, this also updates other operators that consumes
-        the same input. Be cautious because may trigger unintended behaviour.
+        the same input. Be cautious because may trigger unintended behavior.
     """
     assert isinstance(predict_net, caffe2_pb2.NetDef)
     assert isinstance(init_net, caffe2_pb2.NetDef)
@@ -825,7 +831,9 @@ def _get_dependency_chain(ssa, versioned_target, versioned_source):
     consumer_map = get_consumer_map(ssa)
     producer_map = get_producer_map(ssa)
     start_op = min(x[0] for x in consumer_map[versioned_source]) - 15
-    end_op = producer_map[versioned_target][0] + 15
+    end_op = (
+        producer_map[versioned_target][0] + 15 if versioned_target in producer_map else start_op
+    )
     sub_graph_ssa = ssa[start_op : end_op + 1]
     if len(sub_graph_ssa) > 30:
         logger.warning(
