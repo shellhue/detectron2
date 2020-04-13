@@ -25,7 +25,7 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # yolov3 test
 # ===================================
 python projects/Yolov3/train_net.py \
-    --num-gpus 1 \
+    --num-gpus 8 \
     --config-file projects/Yolov3/configs/yolov3_1x.yaml \
     --resume \
     --eval-only \

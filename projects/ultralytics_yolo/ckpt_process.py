@@ -13,14 +13,13 @@ def strip_prefix(weights, output_path, prefix):
         m_state_dict = state_dict["model"]
 
     for k, v in m_state_dict.items():
-        # print(k, k.startswith(prefix))
-        # assert False
         if k.startswith(prefix):
             new_state_dict[k[len(prefix):]] = v
         else:
             new_state_dict[k] = v
     
     torch.save({"model": new_state_dict}, output_path)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -101,10 +101,6 @@ class COCOEvaluator(DatasetEvaluator):
             outputs: the outputs of a COCO model. It is a list of dicts with key
                 "instances" that contains :class:`Instances`.
         """
-        print(type(inputs), type(outputs))
-        print(inputs['image'].size())
-        print(outputs)
-        assert False
         for input, output in zip(inputs, outputs):
             prediction = {"image_id": input["image_id"]}
 
@@ -290,7 +286,10 @@ class COCOEvaluator(DatasetEvaluator):
             headers=["category", "AP"] * (N_COLS // 2),
             numalign="left",
         )
-        self._logger.info("Per-category {} AP: \n".format(iou_type) + table)
+        from termcolor import colored
+        
+
+        self._logger.info("Per-category {} AP: \n".format(iou_type) + colored(table, "cyan"))
 
         results.update({"AP-" + name: ap for name, ap in results_per_category})
         return results
