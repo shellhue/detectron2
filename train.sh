@@ -1,5 +1,14 @@
 export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 export PYTHONPATH=".:${PYTHONPATH}"
+
+# ===================================
+# mask cascade rcnn train
+# ===================================
+# python tools/train_net.py \
+#     --num-gpus 8 \
+#     --config-file configs/Misc/cascade_mask_rcnn_R_50_FPN_3x.yaml \
+#     SOLVER.IMS_PER_BATCH 32 SOLVER.BASE_LR 0.0025
+
 # ===================================
 # maskrcnn train
 # ===================================
@@ -40,11 +49,20 @@ export PYTHONPATH=".:${PYTHONPATH}"
 # ===================================
 # ultralytics/yolov3
 # ===================================
-python projects/ultralytics_yolo/train_net.py \
+# python projects/ultralytics_yolo/train_net.py \
+#     --num-gpus 8 \
+#     --resume \
+#     --config-file projects/ultralytics_yolo/config.yaml \
+#     SOLVER.IMS_PER_BATCH 64]
+
+# ===================================
+# efficientdet train
+# ===================================
+python projects/EfficientDet/train_net.py \
     --num-gpus 8 \
     --resume \
-    --config-file projects/ultralytics_yolo/config.yaml \
-    SOLVER.IMS_PER_BATCH 64
+    --config-file projects/EfficientDet/config.yaml \
+    SOLVER.IMS_PER_BATCH 96
 
 
 # ===================================
